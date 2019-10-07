@@ -1,0 +1,374 @@
+		<!DOCTYPE html>
+
+		<html>
+
+		<head>
+		<style>
+			#info {
+	  position: absolute;
+	  top: 1%;
+	  width: 100%;
+	  padding: 10px;
+	  text-align: center;
+	  color: #ffffff;
+	}
+
+	body {
+	  overflow: hidden;
+	}
+
+			
+			
+			#gui {
+			  position: absolute;
+			  top: 30px;
+			  right: 1%;
+			  height: 350px;
+			  width: 100px;
+			}
+
+		</style>
+		</head>
+
+		<body> 
+<div id="info">train <br/>Press P to START
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js">
+</script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.min.js"></script>	
+			<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+			<script src="https://rawgit.com/mrdoob/three.js/master/examples/js/loaders/MTLLoader.js"></script>
+			<script src="https://rawgit.com/mrdoob/three.js/master/examples/js/loaders/OBJLoader.js"></script>
+      <script src="https://rawgit.com/jyunming-chen/tutsplus/master/js/KeyboardState.js"></script>
+
+
+
+
+
+						
+		<script>
+var renderer, scene, camera, controls;
+var texture, mesh,light,train;
+var gcontrols;
+
+var keyboard = new KeyboardState();
+
+init();
+animate();
+var angle=0,stop,speed;
+
+function buildrail() {
+  
+  let part = new THREE.Object3D();
+  var loader = new THREE.TextureLoader();
+  var texture = loader.load ( 'https://img.freepik.com/free-photo/stone-sand-wall-hard-surface_1253-727.jpg?size=338&ext=jpg' );
+
+   texture.repeat.set (1,0.75)
+  texture.wrapS = texture.wrapT = THREE.WrapRepeating
+  
+  var rail1 = new THREE.Mesh (new THREE.RingGeometry(80,100,40,20,0,Math.PI), new THREE.MeshPhongMaterial({map:texture, side:THREE.DoubleSide}))
+  rail1.rotation.x=-Math.PI/2;
+  rail1.rotation.z=Math.PI/2;
+  rail1.position.y=1;
+  //
+    var rail2 = new THREE.Mesh (new THREE.PlaneGeometry(200,20), new THREE.MeshPhongMaterial({map:texture, side:THREE.DoubleSide}))
+ rail2.rotation.x=-Math.PI/2;
+ rail2.position.y=1;
+ rail2.position.z=-50;
+ //
+     var rail3 = new THREE.Mesh (new THREE.PlaneGeometry(200,20), new THREE.MeshPhongMaterial({map:texture, side:THREE.DoubleSide}))
+ rail3.rotation.x=-Math.PI/2;
+ rail3.position.y=1;
+ rail3.position.z=50;
+ //
+var rail4 = new THREE.Mesh (new THREE.RingGeometry(80,100,10,20,0,Math.PI), new THREE.MeshPhongMaterial({map:texture, side:THREE.DoubleSide}))
+  rail4.rotation.x=-Math.PI/2;
+  rail4.rotation.z=-Math.PI/2;
+  rail4.position.y=1;
+ //
+ 
+  part.add(rail1)
+  //part.add(rail2)
+  //part.add(rail3)
+  part.add(rail4)
+  return part;
+
+}
+function builtrailground(){
+  let part = new THREE.Object3D();
+  var loader = new THREE.TextureLoader();
+  var texture = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAtNKkM_B3V5OdtIHbvhWvajN91xmArvlns0WAf3roXIy2dSU0' );
+
+ 
+    var mesh1 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+      var mesh2 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+      var mesh3 = new THREE.Mesh(new THREE.PlaneGeometry(90, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+      var mesh4 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+      var mesh5 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))   
+    var mesh6 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+        var mesh7 = new THREE.Mesh(new THREE.PlaneGeometry(90, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+        var mesh8 = new THREE.Mesh(new THREE.PlaneGeometry(70, 20), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+  mesh1.rotation.x =- Math.PI / 2;
+   mesh1.rotation.z =- Math.PI / 2;
+  mesh1.position.set(-87,1.5,0)
+  //
+  mesh2.rotation.x =- Math.PI / 2;
+   mesh2.rotation.z =- Math.PI / 3.5;
+  mesh2.position.set(-65,1.5,60)
+  //
+  mesh3.rotation.x =- Math.PI / 2;
+   mesh3.rotation.z =- Math.PI ;
+  mesh3.position.set(0,1.5,86)
+  //
+  mesh4.rotation.x =- Math.PI / 2;
+   mesh4.rotation.z =Math.PI / 3.5;
+  mesh4.position.set(65,1.5,56)
+  //
+  mesh5.rotation.x =- Math.PI / 2;
+   mesh5.rotation.z =-Math.PI / 2;
+  mesh5.position.set(88,1.5,2)
+  //
+  mesh6.rotation.x =- Math.PI / 2;
+   mesh6.rotation.z =-Math.PI / 3.5;
+  mesh6.position.set(65,1.5,-60)
+  //
+   mesh7.rotation.x =- Math.PI / 2;
+   mesh7.rotation.z =-Math.PI ;
+  mesh7.position.set(0,1.5,-88)
+  //
+    mesh8.rotation.x =- Math.PI / 2;
+   mesh8.rotation.z =Math.PI/3.5 ;
+  mesh8.position.set(-65,1.5,-60)
+  part.add(mesh1,mesh2,mesh3,mesh4,mesh5,mesh6,mesh7,mesh8)
+  return part
+}
+function buildtrain() {
+  
+  let part = new THREE.Object3D();
+  var loader = new THREE.TextureLoader();
+  var texture1 = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxWbF5u2acOpaq34Hg-AI61apoEhfAJes9fVF2xQ-yOtOhOmG9qA' );
+
+   texture1.repeat.set (2,1)
+  texture1.wrapS = texture1.wrapT = THREE.WrapRepeating
+  var tire1=buildtire();var tire2=buildtire();
+  var tire3=buildtire();var tire4=buildtire();
+  var tire5=buildtire();var tire6=buildtire();
+ var body = new THREE.Mesh (new THREE.BoxGeometry(20,2.5,35), new THREE.MeshPhongMaterial({color:0xf05b72}))
+ part.add(body);
+ body.position.x=-90;
+ body.position.y=10.5;
+ body.add(tire1);body.add(tire2);body.add(tire3);
+ body.add(tire4);body.add(tire5);body.add(tire6);
+ tire1.rotation.y=-Math.PI/2
+ tire1.position.y=-45
+ tire1.position.x=-7
+ tire2.rotation.y=-Math.PI/2
+ tire2.position.y=-45
+ tire2.position.x=7
+ //
+ tire3.rotation.y=-Math.PI/2
+ tire3.position.y=-45
+ tire3.position.x=-7
+ tire3.position.z=10
+ tire4.rotation.y=-Math.PI/2
+ tire4.position.y=-45
+ tire4.position.x=7
+ tire4.position.z=10
+ //
+ tire5.rotation.y=-Math.PI/2
+ tire5.position.y=-45
+ tire5.position.x=-7
+ tire5.position.z=-10
+ tire6.rotation.y=-Math.PI/2
+ tire6.position.y=-45
+ tire6.position.x=7
+ tire6.position.z=-10
+ //
+var texture3 = loader.load( 'https://thumbs.dreamstime.com/t/galvanized-sheet-corrugated-metal-surface-texture-copy-space-new-stainless-steel-iron-as-fence-69185209.jpg')
+  var head= new THREE.Mesh (new THREE.BoxGeometry(15,15,22), new THREE.MeshPhongMaterial({map:texture3,color:0x7bbfea}))
+  body.add(head)
+  head.position.z=-5
+ head.position.y=9
+  //
+  var ace1 =new THREE.Mesh(new THREE.BoxGeometry(1,0.5, 25),new THREE.MeshPhongMaterial({color:0x000000}))
+  ace1.position.x=10
+ ace1.position.y=-5
+  var ace2 =new THREE.Mesh(new THREE.BoxGeometry(1,0.5, 25),new THREE.MeshPhongMaterial({color:0x000000}))
+  ace2.position.x=-10
+ ace2.position.y=-5
+  body.add(ace1,ace2);
+ //
+ var aside1 =new THREE.Mesh(new THREE.BoxGeometry(1.5,5, 30),new THREE.MeshPhongMaterial({color:0x7bbfea}))
+  aside1.position.x=6
+ aside1.position.y=4
+  var aside2 =new THREE.Mesh(new THREE.BoxGeometry(1.5,5, 30),new THREE.MeshPhongMaterial({color:0x7bbfea}))
+  aside2.position.x=-6
+ aside2.position.y=4
+  body.add(aside1,aside2);//
+  var texture2 = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDR2KwRnXMaPyQADcKis7l99H5k-yAXGAQKsbkyF3zc3W6AZEdcg' );
+ var top =new THREE.Mesh(new THREE.CylinderGeometry(7,7,14),new THREE.MeshPhongMaterial({color:0x11264f}))
+ body.add(top);
+ top.rotation.x=Math.PI/2
+ top.position.y=14
+ top.position.z=-5
+ //
+ var fog1=new THREE. Mesh(new THREE.SphereGeometry(3, 5, 6),new THREE.MeshPhongMaterial())
+ var fog2=new THREE. Mesh(new THREE.SphereGeometry(4, 5, 6),new THREE.MeshPhongMaterial())
+ var fog3=new THREE. Mesh(new THREE.SphereGeometry(5, 5, 6),new THREE.MeshPhongMaterial())
+ fog1.position.y=30
+ fog2.position.y=34
+ fog2.position.z=-2
+ fog3.position.y=40
+  fog3.position.z=-4
+ body.add(fog1,fog2,fog3)
+ //
+var funnel =new THREE.Mesh(new THREE.CylinderGeometry(3,2.5, 10),new THREE.MeshPhongMaterial({map:texture2,color:0x8a8c8e}))
+ body.add(funnel);
+ funnel.rotation.Y=Math.PI/2
+ funnel.position.y=18
+ funnel.position.z=9
+ //
+ var toms =new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 18),new THREE.MeshPhongMaterial({map:texture2,color:0x3e4145}))
+ body.add(toms);
+ toms.rotation.x=Math.PI/2
+ toms.position.y=8
+ toms.position.z=12
+ //
+  var texture4 = loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIEQjpoLpBvvkni8vdhIV8xwZ0C5KhXWjZPPX81c1LJarmB7sA');
+  var Mat = new THREE.MeshPhongMaterial({
+    map: texture4,
+    color:0xfffef9
+  })
+  var face = new THREE.Mesh(new THREE.CircleGeometry(7, 10), Mat)
+  part.add(face);
+  face.position.x=-90
+  face.position.z=21.5
+  face.position.y=18
+ //
+ return part;
+  
+
+}
+
+function buildtire(){
+
+let part = new THREE.Object3D();
+ let loader = new THREE.TextureLoader();
+  loader.crossOrigin = '';
+
+  let tireAssembly = new THREE.Object3D();
+
+  let geometry = new THREE.CylinderGeometry(2.5, 2.5, 5, 10, 2, true)
+  let tread = new THREE.Mesh(geometry,new THREE.MeshPhongMaterial({color: 0x660000}))
+  // parameters need to be set in initial instantiation  
+  tireAssembly.add(tread)
+
+  let tireTex = loader.load('https://3.bp.blogspot.com/-nwmtuJVAp9o/V1-cnO7hGJI/AAAAAAAAa94/ua2rEmEGRC0auw2HhmI4cuMDIzf5cIzrgCLcB/s1600/wheeloflifeanim1.gif');
+  let tireMat = new THREE.MeshPhongMaterial({
+    map: tireTex,
+    transparent: true,
+    side: THREE.DoubleSide,
+    color: 0xf2eada
+  })
+  let tire = new THREE.Mesh(new THREE.CircleGeometry(5, 10), tireMat)
+  let tire1 = tire.clone();
+  tireAssembly.add(tire1)
+  tire1.rotation.x = -Math.PI / 2;
+  tire1.position.y = 2.5
+  let tire2 = tire.clone();
+  tire2.rotation.x = Math.PI / 2
+  tire2.position.y = -2.5
+  tireAssembly.add(tire2)
+  tireAssembly.rotation.x = Math.PI / 2
+  tireAssembly.position.y = 40
+  part.add(tireAssembly)
+   return part
+}
+
+
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.y = 50
+  camera.position.z = 150;
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0xaaaaaa);
+
+  document.body.appendChild(renderer.domElement);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+
+	gcontrols =new function() {
+    this.stop=false;
+		this.speed=0.01;
+    }
+ var gui = new dat.GUI();
+    gui.domElement.id = 'gui';
+
+    var f1 = gui.addFolder("control");
+    f1.add(gcontrols,'speed',0.01,0.05);
+	f1.add(gcontrols,'stop');
+  //////////////////////////////////////////////////////////
+  let loader = new THREE.TextureLoader()
+  loader.crossOrigin = '';
+
+  texture = loader.load('https://i.imgur.com/bv24XBd.jpg?1');
+
+	texture.repeat.set(3, 3);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  
+  mesh = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), 
+  	new THREE.MeshBasicMaterial({map: texture}))
+  mesh.rotation.x = -Math.PI / 2;
+  scene.add(mesh);
+  var rail=buildrail();
+  scene.add(rail);
+  scene.add(builtrailground())
+  light = new THREE.PointLight(0xffffff);
+  light.position.set(200, 200, 200);
+  scene.add(light);
+ train=buildtrain();
+   scene.add(train)
+    
+}
+
+function animate() {
+    keyboard.update();
+
+ if (keyboard.down("P"))  stop=!stop;
+  if(!gcontrols.stop&&stop){
+  angle+=gcontrols.speed;
+  train.rotation.y=angle;
+  
+}
+  requestAnimationFrame(animate);
+ 
+  render();
+}
+
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+window.focus();
+
+
+
+
+		</script>
+		</body>
+
+		</html>

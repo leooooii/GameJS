@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>three.js webgl - morphtargets - MD2 controls</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			color: #000;
+			font-family:Monospace;
+			font-size:13px;
+			text-align:center;
+			font-weight: bold;
+
+			background-color: #fff;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		#info {
+			position: absolute;
+			padding: 10px;
+			width: 100%;
+			text-align: center;
+			color: #fff;
+		}
+
+		a { color: skyblue; }
+	</style>
+</head>
+
+<body>
+        <div id="info">hw5<br>
+            Galaxy baby adventure<br>
+            <button id="play" style="width:20%">Music</button> 
+            </div>
+            <audio id="jumpsound" style="display:none">
+                    <source src="../sounds/jump.wav" type='audio/wav'>
+            </audio>
+            <audio id="soundtrack" autoplay loop style="display:none">
+                    <source src="../sounds/idea.mp3" type='audio/mp3'>
+            </audio>
+            <audio id="drinksound" style="display:none">
+                    <source src="../sounds/drink.wav" type='audio/wav'>
+            </audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://rawgit.com/jyunming-chen/tutsplus/master/js/text2D.js"></script>
+<script src='../js/MD2Loader.js'></script>
+<script src='../js/MorphBlendMesh.js'></script>
+<script src='../js/MD2CharacterComplex.js'></script>
+<script src='../Gyroscope.js'></script>
+<script>
+class MD2Wrapper 
+{
+    constructor (config, controls, pos, scale = 1) 
+    {
+
+		this.md2 = new THREE.MD2CharacterComplex();
+		this.md2.scale = scale
+		this.md2.controls = controls
+		
+        this.md2.onLoadComplete = function () 
+        {
+			// here: 'this' is md2
+			
+			// cast and receive shadows
+			this.enableShadows( true );
+
+			this.setWeapon( 0 );
+			this.setSkin( 0 );
+
+			//this.root.position.copy (pos);
+			this.root.position.x = pos.x;
+			this.root.position.z = pos.z;
+            pos.y=height(pos.x,pos.z);
+            this.root.position.y+=pos.y;
+			// y is automatically set, accoording to scale ...				
+			console.log ('y is ' + this.root.position.y)
+			
+			scene.add( this.root );
+						
+		}
+		this.md2.loadParts( config );			
+    }
+    update()
+    {
+        this.root.position.y+=height(this.position.x,this.position.z)
+    }
+}
+$('#play').click ( function() 
+{
+	isPaused = !isPaused;
+	if (isPaused) { 
+		$('#play').text ('Play music')
+		soundTrack.pause()
+	} else {
+		$('#play').text ('Mute')
+		soundTrack.play()
+	}
+});
+
+function buildstone(){
+    let part = new THREE.Object3D();
+    let loader = new THREE.TextureLoader()
+    loader.crossOrigin = '';
+  var  texture = loader.load ( 'https://cdn.shopify.com/s/files/1/2656/8500/products/design-id-wallpapers-garnet-stone-texture-metal-silver-wallpaper-2035681001515_1024x1024.jpg?v=1522246566' );
+  var base = new THREE.Mesh (new THREE.BoxGeometry(80,30,30), new THREE.MeshPhongMaterial({}))
+  var stone1=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone2=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone3=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone4=new THREE.Mesh(new THREE.SphereGeometry( 25, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone5=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone6=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  var stone7=new THREE.Mesh(new THREE.SphereGeometry( 30, 32, 32 ),new THREE.MeshPhongMaterial({map:texture}))
+  part.add(base);
+  stone2.position.x=30
+  stone3.position.z=20
+  stone4.position.y=25
+  stone5.position.y=23
+  stone5.position.x=10
+  stone6.position.z=-20;
+  stone7.position.x=11;
+  stone7.position.x=-20
+  base.add(stone1,stone2,stone3,stone4,stone5,stone6,stone7)
+  base.position.y=15;
+
+  return part;
+ }
+function buildOxyg(){
+    let part = new THREE.Object3D();
+    let loader = new THREE.TextureLoader()
+    loader.crossOrigin = '';
+    var  texture = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4wE6uqFBoRO6fSo6n3MnvCFBhOlc-q1fAPDyfwylOFTevs4M-' );
+    var body=new THREE.Mesh (new THREE.CylinderGeometry(8,8,30), new THREE.MeshPhongMaterial({map:texture}))
+    var head1=new THREE.Mesh(new THREE.SphereGeometry( 8, 8, 10 ),new THREE.MeshPhongMaterial({color:0x99CCFF}))
+    var head2=new THREE.Mesh(new THREE.SphereGeometry( 8, 8, 10 ),new THREE.MeshPhongMaterial({color:0x99CCFF}))
+    part.add(body);
+    body.add(head1,head2);
+    head1.position.y=15;
+    head2.position.y=-15;
+    body.rotation.z=Math.PI/2
+    return part;
+}
+function buildsatellite(){
+    let part = new THREE.Object3D();
+    let loader = new THREE.TextureLoader()
+    loader.crossOrigin = '';
+  var  texture1 = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz_83vO2dKsmkaiPjE6Jdp5hWPtpBYgz5AzXafVcPTc5e0KGD0Pw' );
+  var texture2=loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJuX20AkV8F2ior0SzzXrB8Gl8ZVKkL_I_yCFY3n7GTAUOXt-r' );
+  var body= new THREE.Mesh (new THREE.CylinderGeometry(40,40,200), new THREE.MeshPhongMaterial({map:texture1}))
+  var tail= new THREE.Mesh (new THREE.CylinderGeometry(40,40,100), new THREE.MeshPhongMaterial({map:texture1}))
+  body.castShadow = true;body.receiveShadow = true;body.rotation.z=Math.PI/2;
+  part.add(body);
+  var connect1=new THREE.Mesh (new THREE.CylinderGeometry(5,5,100), new THREE.MeshPhongMaterial({color:0x404040}))
+  var connect2=new THREE.Mesh (new THREE.CylinderGeometry(5,5,100), new THREE.MeshPhongMaterial({color:0x404040}))
+  var connect3=new THREE.Mesh (new THREE.CylinderGeometry(5,5,50), new THREE.MeshPhongMaterial({color:0x404040}))
+  connect3.position.y=125
+  body.add(connect1,connect2,connect3,tail)
+  tail.position.y=200
+  connect2.position.z=-70;connect1.position.z=70
+  connect2.rotation.x=-Math.PI/2;connect1.rotation.x=Math.PI/2
+  connect1.castShadow = true;connect1.receiveShadow = true;
+  connect2.castShadow = true;connect2.receiveShadow = true;
+  connect3.castShadow = true;connect3.receiveShadow = true;
+  var solar1=new THREE.Mesh (new THREE.BoxGeometry(150,70,5), new THREE.MeshPhongMaterial({map:texture2}))
+  var solar2=new THREE.Mesh (new THREE.BoxGeometry(150,70,5), new THREE.MeshPhongMaterial({map:texture2}))
+  body.add(solar1,solar2)
+  solar1.rotation.y=Math.PI/2
+  solar2.rotation.y=Math.PI/2
+  solar1.position.z=195;
+  solar2.position.z=-195
+  solar1.castShadow = true;
+  solar1.receiveShadow = true;
+  solar2.castShadow = true;
+  solar2.receiveShadow = true;
+  return part;
+}
+
+	var SCREEN_WIDTH = window.innerWidth;
+	var SCREEN_HEIGHT = window.innerHeight;
+	var container, stats;
+	var camera, scene, renderer;
+    var isPaused = false;
+	var yoshiWrap;
+	var light;
+	var oxyg=[];
+	var box3, box3Helper;
+	var tall=72.31490707397461;
+	var cameraControls;
+    var clock = new THREE.Clock();
+    var clock2 = new THREE.Clock();
+    var satellite;
+    var stone=[];
+    var angle,text;
+    var number=3;
+    var judge;
+    var rule;
+    var win=false,count;
+	init();
+	animate();
+
+   function height (x,z) 
+   {
+	if (Math.abs(x) < 200 && Math.abs(z) < 200)
+      return tall+20;
+    else if(Math.abs(x)<35&&z>=200&&z<550)return tall+20
+    else if(Math.abs(x)<500&&z>=550&&z<620)return tall+20
+    else if(x>=500&&x<900&&z>415&&z<=715)return tall+40
+    else if(x>-1100&&x<=-500&&z>=300&&z<900){
+        if(x>-1100&&x<=-550&&z>=337.5&&z<887.5)return tall+40
+        else return tall+20;
+    }
+
+  else
+  	return tall;
+   }
+
+	function init() {
+         jumpsound = document.getElementById ('jumpsound');
+	     soundTrack = document.getElementById ('soundtrack');
+         drinksound = document.getElementById ('drinksound');
+		container = document.createElement( 'div' );
+		document.body.appendChild( container );
+
+		// CAMERA
+
+		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 4000 );
+		camera.position.set( 0, 150, 1300 );
+
+		// SCENE
+
+		scene = new THREE.Scene();
+		scene.background = new THREE.Color( 0xffffff );
+		scene.fog = new THREE.Fog( 0xffffff, 1600, 4000 );
+
+		scene.add( camera );
+
+		// LIGHTS
+
+		//scene.add( new THREE.AmbientLight( 0x222222 ) );
+
+		light = new THREE.DirectionalLight( 0xffffff, 2.25 );
+		light.position.set( 200, 450, 500 );
+
+		light.castShadow = true;
+
+		light.shadow.mapSize.width = 1024;
+		light.shadow.mapSize.height = 1024;
+
+		light.shadow.camera.near = 200;
+		light.shadow.camera.far = 1200;
+
+		light.shadow.camera.left = -350;
+		light.shadow.camera.right = 350;
+		light.shadow.camera.top = 350;
+		light.shadow.camera.bottom = -350;
+        light.shadow.bias=-0.01;
+
+		scene.add( light );
+		// scene.add( new THREE.CameraHelper( light.shadow.camera ) );
+
+
+		//  GROUND
+
+		//var gt = new THREE.TextureLoader().load( "grasslight-big.jpg" );
+        var gt = new THREE.TextureLoader().load( "https://t3.ftcdn.net/jpg/01/24/23/18/240_F_124231897_S1h2wytgYhtSqw14O7aUo9W2EGL8x4aF.jpg");
+        var star= new THREE.TextureLoader().load( "https://media3.s-nbcnews.com/i/MSNBC/Components/Video/201802/NewPlanets.jpg");
+		var gg = new THREE.PlaneBufferGeometry( 16000, 16000 );
+		var gm = new THREE.MeshPhongMaterial( { color: 0xffffff, map: gt } );
+
+		var ground = new THREE.Mesh( gg, gm );
+		ground.rotation.x = - Math.PI / 2;
+		ground.material.map.repeat.set( 64, 64 );
+		ground.material.map.wrapS = THREE.RepeatWrapping;
+		ground.material.map.wrapT = THREE.RepeatWrapping;
+		// note that because the ground does not cast a shadow, .castShadow is left false
+		ground.receiveShadow = true;
+
+		scene.add( ground );
+		scene.background=star;
+		let axes = new THREE.AxesHelper (100)
+		scene.add (axes)
+//////////////////////////////
+        satellite=new buildsatellite();
+        scene.add(satellite);
+        satellite.position.y=500
+        satellite.position.x=-400
+        satellite.position.z=-200
+        stone[0]=new buildstone();
+        for (let i=1;i<=2;i++){
+            stone[i]=new buildstone();
+            stone[i].position.x+=i*400
+            stone[i].position.z+=(i%2)*300
+        }
+        for (let i=1;i<=3;i++){
+            stone[i+2]=new buildstone();
+            stone[i+2].position.x-=i*400
+            stone[i+2].position.z-=(i%2)*300
+        }
+        scene.add(stone[1],stone[5],stone[2],stone[3],stone[4])
+        var floor= new THREE.TextureLoader().load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgdYabqi8IVod1IcgQ6KbYzPqooroRwXLDK5J_2tGCAFKOVo-d4Q");
+        var path= new THREE.TextureLoader().load("http://image.graphic-idea.com/big/105/metal-texture-background-vector-104235.jpg");
+        let platform1 = new THREE.Mesh (new THREE.BoxGeometry(400,20,400), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        let platform2 = new THREE.Mesh (new THREE.BoxGeometry(70,20,350), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        let platform3 = new THREE.Mesh (new THREE.BoxGeometry(1000,20,70), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        let platform4 = new THREE.Mesh (new THREE.BoxGeometry(400,40,300), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        let platform5 = new THREE.Mesh (new THREE.BoxGeometry(600,20,600), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        let platform6 = new THREE.Mesh (new THREE.BoxGeometry(550,20,550), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        //let platform7 = new THREE.Mesh (new THREE.BoxGeometry(500,20,500), new THREE.MeshPhongMaterial ({transparent:false, opacity:0.62,map:floor}))
+        
+        scene.add (platform1,platform2,platform3,platform4,platform5,platform6)
+         platform1.position.y = 10;
+         platform2.position.y = 10;
+         platform3.position.y = 10;
+         platform2.position.z= 375;
+         platform3.position.z=565;
+         platform4.position.y=20;
+         platform4.position.z=565;
+         platform4.position.x=700;
+         platform5.position.y=10;
+         platform5.position.x=-800;
+         platform5.position.z=600;
+         platform6.position.y=30;
+         platform6.position.x=-825;
+         platform6.position.z=612.5;
+         for(let i=0;i<3;i++){
+        oxyg[i]=new buildOxyg();
+         scene.add(oxyg[i]);
+         }
+         oxyg[0].position.y=230;
+         oxyg[1].position.y=250;
+         oxyg[1].position.x=650;
+         oxyg[1].position.z=585;
+         oxyg[2].position.y=250;
+         oxyg[2].position.x=-800;
+         oxyg[2].position.z=585
+        var Text2D = THREE_Text.MeshText2D;
+        var SpriteText2D = THREE_Text.SpriteText2D;
+        var textAlign = THREE_Text.textAlign;
+     text = new Text2D("剩餘氧氣膠囊"+number+"個", {
+       align: textAlign.center,
+//    font: '20px Arial',
+    font: '20px Times',
+    fillStyle: '#00ffff',
+    antialias: false
+  });
+    text.position.set(0, 500, 100);
+    text.scale.set(3, 3, 3);
+    scene.add(text);
+    count=0;
+    rule = new Text2D("花費時間"+count, 
+    {
+       align: textAlign.center,
+//    font: '20px Arial',
+    font: '20px Times',
+    fillStyle: '#00ffff',
+    antialias: false
+  });
+    rule.position.set(0, 550, 100);
+    rule.scale.set(3, 3, 3);
+    scene.add(rule);
+        // platform7,position.y=50;
+        // platform7.position.x=-850;
+        // platform7.position.z=625;
+        //satellite.rotation.x=Math.PI/2
+		// RENDERER
+
+		renderer = new THREE.WebGLRenderer( { antialias: true } );
+		renderer.setPixelRatio( window.devicePixelRatio );
+		renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+		container.appendChild( renderer.domElement );
+
+		renderer.gammaInput = true;
+		renderer.gammaOutput = true;
+
+		renderer.shadowMap.enabled = true;
+		renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+
+		// EVENTS
+
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'keydown', onKeyDown, false );
+		document.addEventListener( 'keyup', onKeyUp, false );
+
+		// CONTROLS
+
+		cameraControls = new THREE.OrbitControls( camera, renderer.domElement );
+		cameraControls.target.set( 0, 50, 0 );
+		cameraControls.update();
+
+		/////////////////////////////////////////////////////////////////////////////
+		// CHARACTER: yoshi
+
+		let configYoshi = {
+
+        baseUrl: "md2models/laalaa/",
+
+        body: "laalaa.md2",
+        skins: [ "tinkywinky.png" ],
+        weapons: [],
+
+			animations: {
+				move: "run",
+				idle: "stand",
+				jump: "jump",
+				attack: "attack",
+				crouchMove: "cwalk",
+				crouchIdle: "cstand",
+				crouchAttach: "crattack"
+			},
+
+			walkSpeed: 350, //translation speed
+			crouchSpeed: 175
+
+		};
+		let controls = {
+
+			moveForward: false,
+			moveBackward: false,
+			moveLeft: false,
+			moveRight: false
+
+		};
+
+		yoshiWrap = new MD2Wrapper (configYoshi, controls, new THREE.Vector3(0,0,0), 3 );
+		var gyro = new THREE.Gyroscope();  
+		gyro.add( camera );
+	
+		gyro.add( light, light.target );
+		yoshiWrap.md2.root.add( gyro );		
+		
+		box3 = new THREE.Box3();
+		box3Helper = new THREE.Box3Helper(box3)
+		//scene.add ( box3Helper )
+
+	}
+
+	// EVENT HANDLERS
+
+	function onWindowResize( event ) {
+
+		SCREEN_WIDTH = window.innerWidth;
+		SCREEN_HEIGHT = window.innerHeight;
+
+		renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+
+		camera.aspect = SCREEN_WIDTH/ SCREEN_HEIGHT;
+		camera.updateProjectionMatrix();
+
+	}
+
+	function onKeyDown ( event ) {
+
+		event.stopPropagation();
+		let controlsY = yoshiWrap.md2.controls;
+
+		switch( event.keyCode ) {
+
+			case 38: /*up*/
+			case 87: /*W*/ 	controlsY.moveForward = true; break;
+
+			case 40: /*down*/
+			case 83: /*S*/ 	 controlsY.moveBackward = true; break;
+
+			case 37: /*left*/
+			case 65: /*A*/   controlsY.moveLeft = true; break;
+
+			case 39: /*right*/
+			case 68: /*D*/    controlsY.moveRight = true; break;
+
+			case 32: /*space*/ controlsY.jump = true; judge=true;break;
+			// jump: should save the animation before jump
+			// return to that animation, when SPACE is up
+			
+			case 67: /*C*/     controlsY.wave = true; break;
+			case 17: /*ctrl*/  controlsY.attack = true; break;
+
+		}
+
+	}
+
+	function onKeyUp ( event ) {
+
+		event.stopPropagation();
+		let controlsY = yoshiWrap.md2.controls;
+		
+		switch( event.keyCode ) {
+
+			case 38: /*up*/
+			case 87: /*W*/ controlsY.moveForward = false; break;
+
+			case 40: /*down*/
+			case 83: /*S*/ 	 controlsY.moveBackward = false; break;
+
+			case 37: /*left*/
+			case 65: /*A*/ 	 controlsY.moveLeft = false; break;
+
+			case 39: /*right*/
+			case 68: /*D*/ 	  controlsY.moveRight = false; break;
+
+			case 32: /*space*/ controlsY.jump = false;jumpsound.play();judge=false; break;
+			// jump: should save the animation before jump
+			// return to that animation, when SPACE is up
+
+			case 67: /*C*/     controlsY.wave = false; break;
+			case 17: /*ctrl*/  controlsY.attack = false; break;
+
+		}
+
+	}
+
+	//
+
+	function animate() {
+
+		requestAnimationFrame( animate );
+		render();
+
+    }
+    var c1=c2=c3=true;
+    function render() 
+    {
+         count=clock2.getElapsedTime();
+	   // satellite.rotation.z=angle
+		box3.setFromObject (yoshiWrap.md2.root)
+        for(let i=0;i<3;i++){
+        // oxyg[i].rotation.x=angle;
+         }
+		var delta = clock.getDelta();
+        if (yoshiWrap.md2) 
+        {
+            yoshiWrap.md2.update (delta)
+            yoshiWrap.md2.root.position.y=height (yoshiWrap.md2.root.position.x, yoshiWrap.md2.root.position.z)
+            if(yoshiWrap.md2.root.position.x>=-10&&yoshiWrap.md2.root.position.x<=10&&judge&&c1){number--;c1=!c1;drinksound.play();oxyg[0].position.y=-1000;}
+            else  if(yoshiWrap.md2.root.position.x>=645&&yoshiWrap.md2.root.position.x<=665&&yoshiWrap.md2.root.position.z>=560&&yoshiWrap.md2.root.position.z<=615&&judge&&c2){number--;c2=!c2;drinksound.play();oxyg[1].position.y=-1000;}
+            else   if(yoshiWrap.md2.root.position.x<=-795&&yoshiWrap.md2.root.position.x>=-815&&yoshiWrap.md2.root.position.z>=560&&yoshiWrap.md2.root.position.z<=615&&judge&&c3){number--;c3=!c3;drinksound.play();oxyg[2].position.y=-1000;}
+          //  yoshiWrap.update()   
+         text.text="剩餘氧氣膠囊"+number+"個";
+         count=count.toFixed(2);
+         rule.text="花費時間"+count; 
+         
+    } 
+        else if(!c1&&!c2&&!c3){win=true; text.text="完成挑戰，拯救Galaxy baby";rule.text="恭喜玩家";}
+        console.log(win);
+        
+		renderer.render( scene, camera );
+
+	}
+
+</script>
+
+</body>
+</html>

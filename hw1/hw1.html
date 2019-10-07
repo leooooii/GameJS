@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+#info {
+  position: absolute;
+  top: 2%;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffffff
+}
+
+body {
+  overflow: hidden;
+}
+
+
+
+</style>
+</head>
+
+<body> 
+	<div id="info">Drive Game 
+ <br>
+ Press up down left right blank
+ <br>
+  <button id="toggle" style="width:20%">Cammera</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js">
+	</script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+<script src="https://rawgit.com/jyunming-chen/tutsplus/master/js/text2D.js"></script>
+
+
+
+	
+<script>
+var camera, scene, renderer;
+var cameraHUD1, cameraHUD2,sceneHUD1;
+var cameraHUD,sceneHUD;
+var camera1,camera2;
+var keyboard = new KeyboardState();
+var clock;
+var text;
+var pos = new THREE.Vector3();
+var vel = new THREE.Vector3();
+var force = new THREE.Vector3();
+var power,angle;
+var turn=false
+var box,road,sign,light1,light2,building,car,tire1,tire0,roate=0.01,card; 
+var wheels = [],circles = [];
+var aframe;
+
+(function() {
+  Math.clamp = function(val,min,max){
+    return Math.min(Math.max(val,min),max);
+    
+  }})();
+  
+  $("#toggle").click(function() {
+  turn = !turn;
+});
+
+init();
+animate();
+function buildroad()
+{
+  let part = new THREE.Object3D();
+	let loader = new THREE.TextureLoader()
+    loader.crossOrigin = '';
+  var  texture = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJaidN4FCxRnWfGVrDfu4Uoj3BKz0OKQ4Y8Gr0MlMKoYU0-6S9' );
+  var texture2=loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcZHLFt_UYVt8NUtmrGRtJnq6scxzo6UFB3dogh_jK2IefMysq')
+  var texture3=loader.load('https://img3.stockfresh.com/files/c/cherezoff/m/41/5468860_stock-photo-asphalt-road-texture-with-two-arrows-and-vertical-line.jpg')
+// texture.repeat.set (1,0.4)
+ texture.wrapS = texture.wrapT = THREE.WrapRepeating
+  var road1= new THREE.Mesh (new THREE.PlaneGeometry(50,400), new THREE.MeshPhongMaterial({map:texture}))
+  road1.rotation.x=-Math.PI/2
+  road1.rotation.z=Math.PI/2
+  road1.position.set(0,0.1,-105)
+  //
+   var road2= new THREE.Mesh (new THREE.PlaneGeometry(50,280), new THREE.MeshPhongMaterial({map:texture}))
+  road2.rotation.x=-Math.PI/2
+  road2.position.set(80,0.1,60)
+  //
+  var road3= new THREE.Mesh (new THREE.PlaneGeometry(45,255), new THREE.MeshPhongMaterial({map:texture}))
+   road3.rotation.x=-Math.PI/2
+   road3.rotation.z=Math.PI/2
+   road3.position.set(-72,0.2,10)
+  //
+    var road4= new THREE.Mesh (new THREE.PlaneGeometry(45,50), new THREE.MeshPhongMaterial({map:texture}))
+   road4.rotation.x=-Math.PI/2
+   road4.rotation.z=Math.PI/2
+   road4.position.set(130,0.2,10)
+  //
+   var road5= new THREE.Mesh (new THREE.PlaneGeometry(30,280), new THREE.MeshPhongMaterial({map:texture2}))
+   road5.rotation.x=-Math.PI/2
+   road5.position.set(170,0.1,60)
+   //
+    var road6= new THREE.Mesh (new THREE.PlaneGeometry(25,220), new THREE.MeshPhongMaterial({map:texture2}))
+   road6.rotation.x=-Math.PI/2
+   road6.position.set(-20,0.1,30)
+   //
+     var road7= new THREE.Mesh (new THREE.PlaneGeometry(25,220), new THREE.MeshPhongMaterial({map:texture2}))
+   road7.rotation.x=-Math.PI/2
+   road7.position.set(-120,0.1,30)
+   //
+     var road8= new THREE.Mesh (new THREE.PlaneGeometry(40,255), new THREE.MeshPhongMaterial({map:texture}))
+   road8.rotation.x=-Math.PI/2
+   road8.rotation.z=Math.PI/2
+   road8.position.set(-72,0.2,160)
+   //
+       var road9= new THREE.Mesh (new THREE.PlaneGeometry(40,95), new THREE.MeshPhongMaterial({map:texture}))
+   road9.rotation.x=-Math.PI/2
+   road9.rotation.z=Math.PI/2
+   road9.position.set(152,0.2,160)
+   //
+       var road10= new THREE.Mesh (new THREE.PlaneGeometry(25,40), new THREE.MeshPhongMaterial({map:texture2}))
+   road10.rotation.x=-Math.PI/2
+   road10.position.set(-10,0.1,-150)
+   //
+     var road11= new THREE.Mesh (new THREE.PlaneGeometry(25,40), new THREE.MeshPhongMaterial({map:texture2}))
+   road11.rotation.x=-Math.PI/2
+   road11.position.set(-100,0.1,-150)
+   //
+          var road12= new THREE.Mesh (new THREE.PlaneGeometry(25,201), new THREE.MeshPhongMaterial({map:texture2}))
+   road12.rotation.x=-Math.PI/2
+   road12.rotation.z=Math.PI/2
+   road12.position.set(-98,0.1,-180)
+   //
+  part.add(road1,road2,road3,road4,road5,road6,road7,road8,road9,road10,road11,road12);
+  return part;
+
+} 
+
+function buildsign()
+{
+ let part = new THREE.Object3D();
+ let loader = new THREE.TextureLoader();
+  loader.crossOrigin = '';
+  texture = loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPItRupEI81ZexcFKX9BTRg27vMlGooYu1OiVXrrVi-iiOnagu');
+   texture2 = loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5BO4nhfpWGmukJL2_SSeq2CN-03yoVouXN9aQ2JdUPmpPSS2W');
+  var sign1= new THREE.Mesh (new THREE.PlaneGeometry(40,30), new THREE.MeshPhongMaterial({map:texture}))
+   sign1.rotation.x=-Math.PI/2
+   sign1.position.set(80,0.2,-65)
+   //
+     var sign2= new THREE.Mesh (new THREE.PlaneGeometry(40,30), new THREE.MeshPhongMaterial({map:texture}))
+   sign2.rotation.x=-Math.PI/2
+   sign2.rotation.z=Math.PI/2
+   sign2.position.set(-180,0.2,-105)
+   //
+     var sign3= new THREE.Mesh (new THREE.PlaneGeometry(40,40), new THREE.MeshPhongMaterial({map:texture2}))
+   sign3.rotation.x=-Math.PI/2
+   sign3.position.set(80,0.2,-105)
+   //
+     var sign4= new THREE.Mesh (new THREE.PlaneGeometry(40,40), new THREE.MeshPhongMaterial({map:texture2}))
+   sign4.rotation.x=-Math.PI/2
+     sign4.rotation.z=Math.PI/2
+   sign4.position.set(80,0.2,157)
+   //
+  part.add(sign1,sign2,sign3,sign4)
+  return part
+}
+
+function buildlight()
+{
+ let part = new THREE.Object3D();
+ let loader = new THREE.TextureLoader();
+  loader.crossOrigin = '';
+  texture = loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIQG1ht7S44lFr6KSwhcJy18m86_bem8EH8INPvP3eah9rgzaNiw');
+  var light1= new THREE.Mesh (new THREE.CylinderGeometry(1.5,1.5,28), new THREE.MeshLambertMaterial({map:texture}))
+   light1.position.set(50,14,-130)
+   //
+     var under= new THREE.Mesh (new THREE.BoxGeometry(7,7,9), new THREE.MeshLambertMaterial({map:texture}))
+     under.position.set(0,15,0)
+     under.rotation.x=Math.PI/2
+     //
+    var red = new THREE.Mesh(new THREE.CircleGeometry(2, 10), new THREE.MeshLambertMaterial({color:0xff0000}));
+    red.position.set(0,13,3.6)
+     //
+      var green = new THREE.Mesh(new THREE.CircleGeometry(2, 10), new THREE.MeshLambertMaterial({color:0x00FF00}));
+    green.position.set(0,17,3.6)
+     //
+  light1.add(under,red,green)
+  part.add(light1)
+  return part
+}
+function buildbuiding(){
+ let part = new THREE.Object3D();
+ let loader = new THREE.TextureLoader();
+  loader.crossOrigin = '';
+var texture1=loader.load('https://sc02.alicdn.com/kf/HTB12K55SFXXXXcbaXXXq6xXFXXXm/Nice-fashionable-aluminium-window-curtain-wall.jpg')
+var texture2=loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIQG1ht7S44lFr6KSwhcJy18m86_bem8EH8INPvP3eah9rgzaNiw')
+var texture3 =loader.load('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHRJbNjJ49y4lJmeq3ncJxkQbFiHgH4eJYfebZvf8hmae_vjG')
+var texture4=loader.load('https://t4.rbxcdn.com/223a63c7341a01d7f9b4b75dfb94e387')
+ var build1 = new THREE.Mesh(new THREE.BoxGeometry(30,60,30), 
+  	new THREE.MeshLambertMaterial({map:texture1}))
+    build1.position.set(60,30,-170)
+     var top1 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build1.add(top1)
+    top1.rotation.x=-Math.PI/2
+    top1.position.set(0,30.1,0)
+    //
+     var build2 = new THREE.Mesh(new THREE.BoxGeometry(30,50,30), 
+  	new THREE.MeshLambertMaterial({map:texture1}))
+    build2.position.set(130,25,-170)
+     var top2 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build2.add(top2)
+    top2.rotation.x=-Math.PI/2
+    top2.position.set(0,25.1,0)
+    //
+       var build3 = new THREE.Mesh(new THREE.BoxGeometry(30,50,30), 
+  	new THREE.MeshLambertMaterial({map:texture3}))
+    build3.position.set(-60,25,-150)
+     var top3 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build3.add(top3)
+    top3.rotation.x=-Math.PI/2
+    top3.position.set(0,25.1,0)
+    //
+     var build4 = new THREE.Mesh(new THREE.BoxGeometry(30,50,30), 
+  	new THREE.MeshLambertMaterial({map:texture3}))
+    build4.position.set(130,25,-30)
+     var top4 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build4.add(top4)
+    top4.rotation.x=-Math.PI/2
+    top4.position.set(0,25.1,0)
+    //
+     var build5 = new THREE.Mesh(new THREE.BoxGeometry(30,60,30), 
+  	new THREE.MeshLambertMaterial({map:texture4}))
+    build5.position.set(130,30,70)
+     var top5 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build5.add(top5)
+    top5.rotation.x=-Math.PI/2
+    top5.position.set(0,30.1,0)
+    //
+    var build6 = new THREE.Mesh(new THREE.BoxGeometry(30,70,30), 
+  	new THREE.MeshLambertMaterial({map:texture1}))
+    build6.position.set(30,35,70)
+     var top6 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build6.add(top6)
+    top6.rotation.x=-Math.PI/2
+    top6.position.set(0,35.1,0)
+    //
+     var build7 = new THREE.Mesh(new THREE.BoxGeometry(40,60,40), 
+  	new THREE.MeshLambertMaterial({map:texture4}))
+    build7.position.set(-70,30,70)
+     var top7 = new THREE.Mesh(new THREE.PlaneGeometry(40,40), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build7.add(top7)
+    top7.rotation.x=-Math.PI/2
+    top7.position.set(0,30.1,0)
+    //
+       var build8 = new THREE.Mesh(new THREE.BoxGeometry(40,70,40), 
+  	new THREE.MeshLambertMaterial({map:texture4}))
+    build8.position.set(-170,35,70)
+     var top8 = new THREE.Mesh(new THREE.PlaneGeometry(40,40), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build8.add(top8)
+    top8.rotation.x=-Math.PI/2
+    top8.position.set(0,35.1,0)
+    //
+       var build9 = new THREE.Mesh(new THREE.BoxGeometry(30,60,30), 
+  	new THREE.MeshLambertMaterial({map:texture3}))
+    build9.position.set(-70,30,-40)
+     var top9 = new THREE.Mesh(new THREE.PlaneGeometry(30,30), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build9.add(top9)
+    top9.rotation.x=-Math.PI/2
+    top9.position.set(0,30.1,0)
+    //
+   var build10 = new THREE.Mesh(new THREE.BoxGeometry(20,40,20), 
+  	new THREE.MeshLambertMaterial({map:texture1}))
+    build10.position.set(-150,20,-20)
+     var top10 = new THREE.Mesh(new THREE.PlaneGeometry(20,20), 
+  	new THREE.MeshLambertMaterial({map:texture2}))
+    build10.add(top10)
+    top10.rotation.x=-Math.PI/2
+    top10.position.set(0,20.1,0)
+    //
+    part.add(build1,build2,build3,build4,build5,build6,build7,build8,build9,build10)
+    return part
+}
+
+function hudButtonPick(event) {
+  // convert to NDC
+  let ndcX = (event.clientX / window.innerWidth) * 2 - 1;
+  let ndcY = -(event.clientY / window.innerHeight) * 2 + 1;
+  whRatio = window.innerWidth / window.innerHeight;
+  halfH = 10;
+  halfW = whRatio * halfH;
+  //let halfW = cameraHUD.right;
+  //let halfH = cameraHUD.top;
+  let xx = ndcX * halfW;
+  let yy = ndcY * halfH;
+  // button location: 
+  let downButtonCenter = new THREE.Vector2(0, -(halfH - halfW / 10));
+  let upbuttonCenter = new THREE.Vector2(-halfW / 5, -(halfH - halfW / 10));
+  let mouse = new THREE.Vector2(xx, yy);
+ /* if (mouse.distanceTo(leftButtonCenter) < halfW / 10)
+    angle+=0.7;
+  if (mouse.distanceTo(rightbuttonCenter) < halfW / 10)
+    angle-=0.7;*/
+  if (mouse.distanceTo(downButtonCenter) < halfW / 10)
+    power-=15;
+  if (mouse.distanceTo(upbuttonCenter) < halfW / 10)
+    power+=15;
+
+}
+
+function initHUD() {
+  sceneHUD1= new THREE.Scene();
+  cameraHUD1 = new THREE.OrthographicCamera(-150, 200, 150, -200, -700, 800);
+  cameraHUD1.position.z = 20;  // for border
+  
+  cameraHUD2 = new THREE.OrthographicCamera(-200,200,200,-200,-450,500);
+  cameraHUD2.position.set (0,30,0)
+  cameraHUD2.up.set (0,0,-1)   // for top view
+  cameraHUD2.lookAt (new THREE.Vector3())
+
+  var lineGeometry = new THREE.Geometry();
+  lineGeometry.vertices.push(new THREE.Vector3(-10, -10, 0),
+    new THREE.Vector3(10, -10, 0),
+    new THREE.Vector3(10, 10, 0),
+    new THREE.Vector3(-10, 10, 0),
+    new THREE.Vector3(-10, -10, 0));
+  var line = new THREE.Line(lineGeometry,
+    new THREE.LineBasicMaterial({
+      color: 0xffffff
+    }));
+  sceneHUD1.add(line);
+  
+}
+
+function init() {
+   clock = new THREE.Clock();
+  container = document.createElement('div');
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+  document.body.appendChild(renderer.domElement);
+  
+  scene = new THREE.Scene();
+
+
+ camera1 = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera2=new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera1.position.z=200
+  camera1.position.y=400
+  controls = new THREE.OrbitControls(camera1, renderer.domElement);
+  controls.enableKeys = false;
+
+  document.body.appendChild(renderer.domElement);
+  scene = new THREE.Scene();
+
+
+	/////////////////////////////////////////////
+
+    var directionalLight = new THREE.DirectionalLight(0xffffff);
+  directionalLight.position.set(0, 0, 1).normalize();
+  scene.add(directionalLight);
+
+
+ var light = new THREE.PointLight(0xffffff);
+  light.position.set(200, 300, -150);
+ scene.add(light);
+ 
+ 
+ car = new THREE.Object3D()
+  scene.add(car);
+	let loader = new THREE.TextureLoader()
+    loader.crossOrigin = '';
+     var texture = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFE6np7Q0VhzL4FLwVMzWX87YnXLwwP3scqsZOTDMHq9NmM_YX' );
+       var texture2 = loader.load ( 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlzn-zVp1jfRNBE7KF4kSk-WyOM2825vpZwuIPsDeX8hSBgNSc9w' );
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(new THREE.Vector3(32, 0, 0));
+  geometry.vertices.push(new THREE.Vector3(0, 12, 0));
+  geometry.vertices.push(new THREE.Vector3(0, 0, 12));
+  geometry.vertices.push(new THREE.Vector3(0, 0, -12));
+  var face;
+  face = new THREE.Face3(0, 1, 2);
+  geometry.faces.push(face);
+  face = new THREE.Face3(1, 3, 2);
+  geometry.faces.push(face);
+  face = new THREE.Face3(3, 1, 0);
+  geometry.faces.push(face);
+  face = new THREE.Face3(2, 3, 0);
+  geometry.faces.push(face);
+  geometry.computeBoundingSphere();
+  geometry.computeFaceNormals();
+ sceneHUD = new THREE.Scene();
+  mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
+    color:0xae8f00
+  }));
+  car.add(mesh)
+  mesh.position.set(-4, 7.2, 0);
+  //
+  let treadTex = loader.load('https://i.imgur.com/21rKfjX.jpg?2');
+  treadTex.repeat.set(6, 1)
+  treadTex.wrapS = THREE.RepeatWrapping
+  let tireTex = loader.load('https://static.wixstatic.com/media/7272fc_aee8f035d4c7416db44b522f4e079f5b~mv2.jpg/v1/fill/w_309,h_301,al_c,q_80,usm_0.66_1.00_0.01/7272fc_aee8f035d4c7416db44b522f4e079f5b~mv2.webp');
+    let texture3 = loader.load('https://images-na.ssl-images-amazon.com/images/I/71H9zFfbMOL._SX355_.jpg');
+  for (var i = 0; i < 4; i++) {
+    wheels[i] = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 2, 80, 2, true), new THREE.MeshBasicMaterial({
+      map: treadTex
+    }));
+    wheels[i].rotation.x = Math.PI / 2
+  }
+  for (var i = 0; i < 8; i++) {
+    circles[i] = new THREE.Mesh(new THREE.CircleGeometry(3, 80), new THREE.MeshBasicMaterial({
+      map: tireTex,
+      side: THREE.DoubleSide
+    }));
+  }
+  wheels[0].position.set(0, 4, 7)
+  wheels[1].position.set(0, 4, -7)
+  wheels[2].position.set(15, 4, 4)
+  wheels[3].position.set(15, 4, -4)
+  car.add(wheels[0],wheels[1],wheels[2],wheels[3]);
+  circles[0].position.set(0, 4, 8)
+  circles[1].position.set(0, 4, 6)
+  circles[2].position.set(15, 4, -5)
+  circles[3].position.set(15, 4, -3)
+  circles[4].position.set(0, 4, -8)
+  circles[5].position.set(0, 4, -6)
+  circles[6].position.set(15, 4, 5)
+  circles[7].position.set(15, 4, 3)
+car.add(circles[0],circles[1],circles[2],circles[3],circles[4],circles[5],circles[6],circles[7])
+  card=new THREE.Mesh(new THREE.PlaneGeometry(5,3),new THREE.MeshPhongMaterial({map:texture3}))
+  card.position.x=-0.1
+ mesh.add(card)
+  card.rotation.y=-Math.PI/2
+	power = 5;
+    angle = 0.0;
+	texture.repeat.set(20, 20);
+   texture.wrapS = THREE.RepeatWrapping;
+   texture.wrapT = THREE.RepeatWrapping;
+  
+  var plane = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), 
+  	new THREE.MeshPhongMaterial({map: texture}))
+	scene.add(plane)
+	plane.rotation.x=-Math.PI/2
+    road=buildroad();
+    scene.add(road)
+    
+  var texturetree = loader.load('https://i.imgur.com/omX5Drl.png');
+
+  var texMat = new THREE.MeshBasicMaterial({
+    map: texturetree,
+    transparent: true
+  });
+	 tree = new THREE.Mesh(new THREE.PlaneGeometry(40, 80), texMat);
+	trees = []
+  for (let i = 0; i <= 6; i++) {
+  	let tt = tree.clone();
+    trees.push (tt)
+    scene.add (tt)
+}
+trees[0].position.set(-50,35,30)
+trees[1].position.set(20,35,-150)
+trees[2].position.set(160,35,-150)
+trees[3].position.set(-120,35,-150)
+trees[4].position.set(-150,35,110)
+trees[5].position.set(130,35,110)
+trees[6].position.set(30,35,-60)
+sign=buildsign();
+light1=buildlight();light2=buildlight();
+light2.position.set(0,0,270)
+building=buildbuiding()
+scene.add(sign,light1,light2,building)
+
+ var Text2D = THREE_Text.MeshText2D;
+  var textAlign = THREE_Text.textAlign;
+
+  text = new Text2D("速度"+power, {
+    align: textAlign.center,
+    font: '20px Times',
+    fillStyle: '#00ffff',
+    antialias: false
+  });
+  text.position.set(-100, 150, 0);
+  text.scale.set(.5, .5, .5);
+  scene.add(text);
+  cameraHUD = new THREE.OrthographicCamera(-10, 10, 10, -10, -10, 1600);
+  cameraHUD.position.z = 1580;
+ sceneHUD = new THREE.Scene();
+  var fframe = new THREE.Mesh(new THREE.PlaneGeometry(20, 2), new THREE.MeshBasicMaterial({
+    color: 0xffff34,
+    opacity: 0.3,
+    transparent: true,
+    depthTest: false
+  }));
+  var fup = fframe.clone();
+  fup.position.set(0, 9, 0);
+  var fdown = fframe.clone();
+  fdown.position.set(0, -9, 0);
+  sceneHUD.add(fup);
+  sceneHUD.add(fdown);
+renderer.autoClear = false;
+ whRatio = window.innerWidth / window.innerHeight;
+  halfH = 10;
+  halfW = whRatio * halfH;
+  texture5= loader.load('https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3644935236,1108912136&fm=26&gp=0.jpg');
+  aframe = new THREE.Object3D();
+ /* let ffframe = new THREE.Mesh(new THREE.PlaneGeometry(2 * halfW, 2 * halfW / 10), new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    opacity: 0.0,
+    transparent: true,
+    depthTest: false, // always drawn
+    depthWrite: true
+  })); 
+  aframe.add(ffframe);*/
+  var button = [];
+  for (var i = 0; i < 2; i++) {
+    button[i] = new THREE.Mesh(new THREE.CircleGeometry(halfW / 35,30), new THREE.MeshBasicMaterial({
+      map: texture5,
+      depthTest: false 
+    }));
+    aframe.add(button[i])
+  }
+  sceneHUD.add(aframe)
+  //scene.add(sceneHUD1)
+  aframe.position.set(0, -(halfH - halfW / 12), 10)
+ button[0].position.set(-halfW /12, 0, 0)
+  button[0].rotation.z = Math.PI/2
+  button[1].rotation.z = -Math.PI/2
+  document.addEventListener('mousedown', hudButtonPick, false);
+	initHUD();
+  renderer.autoClear = false;
+}
+
+function update(dt) {
+
+  keyboard.update();
+  
+  if (vel.length() > 0) {
+    angle = Math.atan2(-vel.z, vel.x); // update orientation
+  }
+
+  if (keyboard.pressed("space"))  
+ 	 { power = 0.1;roate=0}               
+  if (keyboard.pressed("up"))  
+ 	 { power += 15;roate+=1.5}        
+  if (keyboard.pressed("down"))  
+ 	 { power -= 15;roate-=2}   
+ 	
+  power = Math.clamp(power, 0, 120.0); 
+  roate = Math.clamp(roate, 0, 0.5); 
+  if(power==0)roate=0.01
+  
+  var angle_thrust = angle;
+  if (keyboard.pressed("left"))
+    angle_thrust += 0.7;
+  if (keyboard.pressed("right"))
+    angle_thrust -= 0.7;
+    
+    
+  var thrust = new THREE.Vector3(1,0,0).multiplyScalar(power).applyAxisAngle(new THREE.Vector3(0,1,0), angle_thrust);
+  force.copy (thrust);
+  force.add(vel.clone().multiplyScalar(-2))
+
+  vel.add(force.clone().multiplyScalar(dt));
+  pos.add(vel.clone().multiplyScalar(dt));
+}
+
+
+function animate() {
+
+  controls.update();
+  let camera;
+  camera2.position.copy(car.localToWorld(new THREE.Vector3(-70,25,0)));
+  camera2.lookAt(car.position);
+  controls.update();
+  if(turn)camera=camera2;
+  else camera=camera1;
+  
+  var dt = clock.getDelta();
+  update(dt);
+
+  // car update
+    if(car!=undefined)
+  {car.position.copy(pos);
+   car.rotation.y = angle;
+  } 
+  text.text="Speed"+power.toFixed(2);
+    for (var i = 0; i < 4; i++) {
+    if(power==0)roate=0
+    wheels[i].rotation.y -= roate
+  }
+  for (var i = 0; i < 8; i++) {
+  if(power==0)roate=0
+    circles[i].rotation.z -= roate
+  }
+  trees.forEach (function(t) {t.lookAt (camera.position)})
+
+  requestAnimationFrame(animate);
+
+  renderer.clear(true);
+  renderer.render(scene, camera);
+  renderer.render(sceneHUD, cameraHUD);
+  render(camera)
+   }
+
+function render(camera) {
+  var WW = window.innerWidth;
+  var HH = window.innerHeight;
+
+  renderer.setScissorTest(true);
+
+  renderer.setViewport(0, 0, WW, HH);
+  camera.aspect = WW / HH;
+  camera.updateProjectionMatrix();
+
+  renderer.setScissor(0, 0, WW, HH);
+  renderer.clear();
+  renderer.render(scene, camera);
+  renderer.render(sceneHUD, cameraHUD);
+ renderer.setViewport(WW / 1.6, HH / 1.5, WW / 3, HH / 3);
+  renderer.setScissor(WW / 1.6, HH /1.5, WW / 3, HH / 3);
+  renderer.clear(); // important!
+  renderer.render(sceneHUD1, cameraHUD1); // border
+  renderer.render(scene, cameraHUD2); // topview
+  renderer.setScissorTest(false);
+}
+
+
+
+
+</script>
+</body>
+
+</html>
